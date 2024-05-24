@@ -61,17 +61,17 @@ def caption_image(image_file, prompt):
 
 
 def main():
-    data_dir = './data'
+    data_dir = '../data'
     if not os.path.isdir(data_dir):
         os.makedirs(data_dir)
 
     for data in ['train', 'val', 'test']:
-        df = pd.read_csv(f'./data/origin_{data}.csv')
+        df = pd.read_csv(os.path.join(data_dir, f'origin_{data}.csv'))
 
         prompts = []
         for file_name in tqdm(df['filename']):
             try:
-                image, output = caption_image(f'./datasets/{file_name}',
+                image, output = caption_image(f'../datasets/{file_name}',
                                               'Describe this street view image from a pedestrians perspective. Describe the weather, surrounding natural features, road conditions, presence of pedestrians or vehicles, type and condition of buildings, cleanliness of the street, vegetation such as street trees, and overall ambiance of the image.')
                 prompt = output.strip().replace('.\n', ' ')
                 prompts.append(prompt)
