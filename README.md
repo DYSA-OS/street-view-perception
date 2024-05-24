@@ -29,3 +29,7 @@ HRNet: https://github.com/CSAILVision/semantic-segmentation-pytorch
 ### 3. LLM
 - LLaVA: https://github.com/camenduru/LLaVA
 - XLNet: https://github.com/zihangdai/xlnet
+
+- ```git clone -b v1.0 https://github.com/camenduru/LLaVA```
+- ```cd LLaVA```
+- ```python img2prompt.py```
