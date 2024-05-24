@@ -14,11 +14,13 @@
 ### 1. Classification
 DenseNet121: https://github.com/liuzhuang13/DenseNet
 
+#### step
 ```python baseline.py```
 
 ### 2. Segmentation
 HRNet: https://github.com/CSAILVision/semantic-segmentation-pytorch
 
+#### step
 - ```git clone https://github.com/CSAILVision/semantic-segmentation-pytorch.git```
 - ```cd semantic-segmentation-pytorch```
 - ```DOWNLOAD_ONLY=1 ./demo_test.sh```
@@ -30,6 +32,9 @@ HRNet: https://github.com/CSAILVision/semantic-segmentation-pytorch
 - LLaVA: https://github.com/camenduru/LLaVA
 - XLNet: https://github.com/zihangdai/xlnet
 
+#### step
 - ```git clone -b v1.0 https://github.com/camenduru/LLaVA```
 - ```cd LLaVA```
 - ```python img2prompt.py```
+- ```cd ..```
+- ```python llm.py```
