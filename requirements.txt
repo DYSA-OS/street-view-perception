@@ -7,3 +7,7 @@ matplotlib
 seaborn
 torch
 xgboost
+transformers==4.31.0
+einops
+bitsandbytes
+accelerate
