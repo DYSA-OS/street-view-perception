@@ -6,6 +6,10 @@
 ## Dataset
 ```python dataset.py```
 
+- Train set size: 5772
+- Validation set size: 824
+- Test set size: 1650
+
 ## Model
 ### 1. Classification
 DenseNet121: https://github.com/liuzhuang13/DenseNet
@@ -17,7 +21,10 @@ HRNet: https://github.com/CSAILVision/semantic-segmentation-pytorch
 
 - ```git clone https://github.com/CSAILVision/semantic-segmentation-pytorch.git```
 - ```cd semantic-segmentation-pytorch```
-- ```sh demo_test.sh```
+- ```DOWNLOAD_ONLY=1 ./demo_test.sh```
+- ```python converter.py```
+- ```cd ..```
+- ```python segment.py```
 
 ### 3. LLM
 - LLaVA: https://github.com/camenduru/LLaVA
