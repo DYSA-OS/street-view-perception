@@ -151,7 +151,7 @@ def training(class_name, result_dir):
     f1 = f1_score(y_true, y_pred, average='weighted')
 
     with open('./results/test.txt', 'a') as f:
-        f.write(f'baseline, {class_name}, {acc:.6f}, {f1:.6f}\n')
+        f.write(f'llm, {class_name}, {acc:.6f}, {f1:.6f}\n')
 
     cm = confusion_matrix(y_true, y_pred)
     plt.figure(figsize=(10, 8))
