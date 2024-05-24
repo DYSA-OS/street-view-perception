@@ -1,3 +1,3 @@
 model, class_name, accuracy, f1
-baseline, beautiful, 0.555271, 0.396492
-baseline, clean, 0.618219, 0.473147
+baseline, beautiful, 0.557576, 0.399198
+baseline, clean, 0.633939, 0.491914

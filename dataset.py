@@ -117,6 +117,7 @@ def extract_walk_road():
     for col in ['beautiful', 'safe', 'lively', 'clean', 'depressing', 'wealthy']:
         filtered_df[col] = filtered_df[col].apply(satisfaction_mapper)
 
+    filtered_df = filtered_df.drop_duplicates(subset='filename', keep='first')
     filtered_df.to_csv('data.csv', index=False)
 
     print('[Done] - STEP 2: extract walk road data')
@@ -174,7 +175,7 @@ def split_dataset():
 
 def main():
     # STEP 1
-    # download_dataset()
+    download_dataset()
 
     # STEP 2
     extract_walk_road()

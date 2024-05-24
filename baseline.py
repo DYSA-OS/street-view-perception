@@ -50,12 +50,12 @@ def training(class_name, result_dir):
 
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-    early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
     csv_logger = CSVLogger(os.path.join(result_dir, f'{class_name}.csv'), append=True)
 
     model.fit(
         train_generator,
-        epochs=100,
+        epochs=50,
         validation_data=val_generator,
         callbacks=[early_stopping, csv_logger]
     )
@@ -74,8 +74,8 @@ def training(class_name, result_dir):
         f.write(f'baseline, {class_name}, {acc:.6f}, {f1:.6f}\n')
 
     print(f'CLASS => {class_name}')
-    print(f'Test Accuracy: {acc:2f}')
-    print(f'Test F1 Score: {f1:2f}\n')
+    print(f'Test Accuracy: {acc:.2f}')
+    print(f'Test F1 Score: {f1:.2f}\n')
 
     cm = confusion_matrix(y_true, y_pred)
     plt.figure(figsize=(10, 8))
