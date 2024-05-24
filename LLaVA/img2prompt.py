@@ -61,6 +61,10 @@ def caption_image(image_file, prompt):
 
 
 def main():
+    data_dir = './data'
+    if not os.path.isdir(data_dir):
+        os.makedirs(data_dir)
+
     for data in ['train', 'val', 'test']:
         df = pd.read_csv(f'./data/origin_{data}.csv')
 
@@ -78,7 +82,7 @@ def main():
 
         df['prompt'] = prompts
 
-        df.to_csv(f'prompt_{data}.csv', index=False)
+        df.to_csv(os.path.join(data_dir, f'prompt_{data}.csv'), index=False)
 
 
 if __name__ == '__main__':
