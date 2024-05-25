@@ -5,6 +5,7 @@ import torch
 from transformers import XLNetTokenizer, XLNetForSequenceClassification, AdamW
 from torch.utils.data import TensorDataset, DataLoader
 from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
+from tqdm import tqdm
 import matplotlib.pyplot as plt
 import seaborn as sns
 import random
@@ -87,7 +88,7 @@ def training(class_name, result_dir):
     early_stopping_counter = 0
 
     # Training and validation
-    for epoch in range(num_epochs):
+    for epoch in tqdm(range(num_epochs)):
         model.train()
         train_loss = 0.0
 
@@ -116,7 +117,7 @@ def training(class_name, result_dir):
         avg_val_loss = val_loss / len(val_loader)
 
         with open(os.path.join(result_dir, f'{class_name}.txt'), 'a') as f:
-            f.write(f'Epoch {epoch + 1} | Train Loss: {avg_train_loss}, Val Loss: {avg_val_loss}')
+            f.write(f'Epoch {epoch + 1} | Train Loss: {avg_train_loss}, Val Loss: {avg_val_loss}\n')
 
         # Early stopping
         if avg_val_loss < best_val_loss:
