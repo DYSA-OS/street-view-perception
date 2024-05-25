@@ -11,6 +11,7 @@ from llava.constants import IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_TOKEN, DEFAULT_IM_S
 from llava.mm_utils import tokenizer_image_token, get_model_name_from_path, KeywordsStoppingCriteria
 from tqdm import tqdm
 import pandas as pd
+import re
 
 model_path = '4bit/llava-v1.5-13b-3GB'
 kwargs = {'device_map': 'auto'}
@@ -60,6 +61,55 @@ def caption_image(image_file, prompt):
     return image, output
 
 
+def alpha_num(title):
+    return re.sub(r'[^A-Za-z0-9 ]', '', title)
+
+
+stopwords = ["a", "about", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "as",
+             "at", "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "could",
+             "did", "do", "does", "doing", "down", "during", "each", "few", "for", "from", "further", "had",
+             "has",
+             "have", "having", "he", "he'd", "he'll", "he's", "her", "here", "here's", "hers", "herself", "him",
+             "himself", "his", "how", "how's", "i", "i'd", "i'll", "i'm", "i've", "if", "in", "into", "is",
+             "it", "it's", "its",
+             "itself", "let's", "me", "more", "most", "my", "myself", "nor", "of", "on", "once", "only", "or",
+             "other", "ought",
+             "our", "ours", "ourselves", "out", "over", "own", "same", "she", "she'd", "she'll", "she's",
+             "should", "so", "some",
+             "such", "than", "that", "that's", "the", "their", "theirs", "them", "themselves", "then", "there",
+             "there's", "these", "they",
+             "they'd", "they'll", "they're", "they've", "this", "those", "through", "to", "too", "under",
+             "until", "up", "very", "was", "we",
+             "we'd", "we'll", "we're", "we've", "were", "what", "what's", "when", "when's", "where", "where's",
+             "which", "while", "who",
+             "who's", "whom", "why", "why's", "with", "would", "you", "you'd", "you'll", "you're", "you've",
+             "your", "yours", "yourself", "yourselves",
+             "pedestrians", "perspective", "image", "depicts", "street", "view", "pedestrian", "describe",
+             "pictures", "picture"
+             ]
+
+
+def remove_stopwords(title):
+    final_text = []
+    for i in title.split():
+        if i.strip().lower() not in stopwords:
+            final_text.append(i.strip())
+    return ' '.join(final_text)
+
+
+def delete_duplications(text):
+    words = text.split()
+
+    unique_words = []
+
+    for word in words:
+        if word not in unique_words:
+            unique_words.append(word)
+
+    result = ' '.join(unique_words)
+    return result
+
+
 def main():
     data_dir = '../data'
     if not os.path.isdir(data_dir):
@@ -81,6 +131,10 @@ def main():
                 continue
 
         df['prompt'] = prompts
+        df['prompt'] = df['prompt'].str.lower()
+        df['prompt'] = df['prompt'].apply(alpha_num).apply(remove_stopwords).apply(delete_duplications)
+
+        df.to_csv('prompt.csv', index=False)
 
         df.to_csv(os.path.join(data_dir, f'prompt_{data}.csv'), index=False)
 
