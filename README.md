@@ -3,6 +3,16 @@
 
 > Place Pulse is a crowdsourcing effort that aims to map which areas of a city are perceived as safer, livelier, wealthier, more active, beautiful and friendly. By asking users to select images from a pair, Place Pulse collected more than 1.5 million reports that evaluate more than 100,000 images from 56 cities.
 
+## Result
+|  model   | class_name | accuracy | f1_score |
+|:--------:|:----------:|:--------:|:--------:|
+| baseline | beautiful  | 0.557576 | 0.399198 |
+| baseline |   clean    | 0.633939 | 0.491914 |
+| segment  | beautiful  | 0.486667 | 0.469052 |
+| segment  |   clean    | 0.576364 | 0.506088 |
+|   llm    | beautiful  | 0.557576 | 0.399198 |
+|   llm    |   clean    | 0.633939 | 0.491914 |
+
 ## Dataset
 ```python dataset.py```
 
