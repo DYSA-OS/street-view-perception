@@ -1,4 +1,10 @@
 import pandas as pd
+import os
+import requests
+from tqdm import tqdm
+import subprocess
+
+import pandas as pd
 from sklearn.utils import resample
 from sklearn.model_selection import train_test_split
 import os
@@ -62,4 +68,39 @@ def make_origin_balanced():
         print(f'Validation set size: {len(val_df)}')
         print(f'Test set size: {len(test_df)}')
 
+
+def remake_data():
+    for data_name in ['prompt', 'hrnet']:
+        df_prompt = pd.concat([pd.read_csv(f'./data/{data_name}_train.csv'), pd.read_csv(f'./data/{data_name}_val.csv'), pd.read_csv(f'./data/{data_name}_test.csv')])
+
+        df_prompt_clean = df_prompt[['filename', 'city', 'lat', 'long', 'clean']]
+        df_prompt_beautiful = df_prompt[['filename', 'city', 'lat', 'long', 'beautiful']]
+
+        df_origin_train_clean = pd.read_csv('./balanced_data/origin_train_clean.csv')
+        df_origin_val_clean = pd.read_csv('./balanced_data/origin_val_clean.csv')
+        df_origin_test_clean = pd.read_csv('./balanced_data/origin_test_clean.csv')
+
+        df_origin_train_beautiful = pd.read_csv('./balanced_data/origin_train_beautiful.csv')
+        df_origin_val_beautiful = pd.read_csv('./balanced_data/origin_val_beautiful.csv')
+        df_origin_test_beautiful = pd.read_csv('./balanced_data/origin_test_beautiful.csv')
+
+        df_prompt_train_clean = pd.merge(df_origin_train_clean, df_prompt_clean, on='filename').drop(['clean_y'], axis=1).rename(columns={'clean_x': 'clean'})
+        df_prompt_val_clean = pd.merge(df_origin_val_clean, df_prompt_clean, on='filename').drop(['clean_y'], axis=1).rename(columns={'clean_x': 'clean'})
+        df_prompt_test_clean = pd.merge(df_origin_test_clean, df_prompt_clean, on='filename').drop(['clean_y'], axis=1).rename(columns={'clean_x': 'clean'})
+
+        df_prompt_train_beautiful = pd.merge(df_origin_train_beautiful, df_prompt_beautiful, on='filename').drop(['beautiful_y'], axis=1).rename(columns={'beautiful_y': 'beautiful'})
+        df_prompt_val_beautiful = pd.merge(df_origin_val_beautiful, df_prompt_beautiful, on='filename').drop(['beautiful_y'], axis=1).rename(columns={'beautiful_y': 'beautiful'})
+        df_prompt_test_beautiful = pd.merge(df_origin_test_beautiful, df_prompt_beautiful, on='filename').drop(['beautiful_y'], axis=1).rename(columns={'beautiful_y': 'beautiful'})
+
+
+        df_prompt_train_clean.to_csv(f'./balanced_data/{data_name}_train_clean.csv', index=False)
+        df_prompt_val_clean.to_csv(f'./balanced_data/{data_name}_val_clean.csv', index=False)
+        df_prompt_test_clean.to_csv(f'./balanced_data/{data_name}_test_clean.csv', index=False)
+
+        df_prompt_train_beautiful.to_csv(f'./balanced_data/{data_name}_train_beautiful.csv', index=False)
+        df_prompt_val_beautiful.to_csv(f'./balanced_data/{data_name}_val_beautiful.csv', index=False)
+        df_prompt_test_beautiful.to_csv(f'./balanced_data/{data_name}_test_beautiful.csv', index=False)
+
+
 make_origin_balanced()
+remake_data()
