@@ -13,7 +13,7 @@ def create_data_generator(
     df, class_name, batch_size=64, target_size=(224, 224), shuffle=False
 ):
     df["img_path"] = df["filename"].apply(
-        lambda val: os.path.join("./place-pulse-road-walk", val)
+        lambda val: os.path.join("./place-pulse", val)
     )
     df[class_name] = df[class_name].astype(str)
 
