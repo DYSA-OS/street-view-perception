@@ -5,12 +5,10 @@ import torch
 from transformers import XLNetTokenizer, XLNetForSequenceClassification, AdamW
 from torch.utils.data import TensorDataset, DataLoader
 from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
-from tqdm import tqdm
-import matplotlib.pyplot as plt
-import seaborn as sns
 import random
 import os
-warnings.simplefilter(action='ignore', category=FutureWarning)
+
+warnings.simplefilter(action="ignore", category=FutureWarning)
 
 # Seed setting
 seed = 42
@@ -26,24 +24,24 @@ def create_tokenizer(tokenizer, input_texts, max_length=600):
     data_tokenizer = tokenizer.batch_encode_plus(
         input_texts,
         max_length=max_length,
-        padding='longest',
+        padding="longest",
         truncation=True,
-        return_tensors='pt'
+        return_tensors="pt",
     )
 
     return data_tokenizer
 
 
 def training(class_name, result_dir):
-    tokenizer = XLNetTokenizer.from_pretrained('xlnet-base-cased', do_lower_case=True)
+    tokenizer = XLNetTokenizer.from_pretrained("xlnet-base-cased", do_lower_case=True)
 
-    df_train = pd.read_csv('./data/prompt_train.csv')
-    df_val = pd.read_csv('./data/prompt_val.csv')
-    df_test = pd.read_csv('./data/prompt_test.csv')
+    df_train = pd.read_csv("./data/llava/train.csv")
+    df_val = pd.read_csv("./data/llava/val.csv")
+    df_test = pd.read_csv("./data/llava/test.csv")
 
-    train_input_texts = df_train['prompt'].tolist()
-    val_input_texts = df_val['prompt'].tolist()
-    test_input_texts = df_test['prompt'].tolist()
+    train_input_texts = df_train["prompt"].tolist()
+    val_input_texts = df_val["prompt"].tolist()
+    test_input_texts = df_test["prompt"].tolist()
 
     # Tokenize data
     train_encoded_inputs = create_tokenizer(tokenizer, train_input_texts)
@@ -51,25 +49,27 @@ def training(class_name, result_dir):
     test_encoded_inputs = create_tokenizer(tokenizer, test_input_texts)
 
     # Data preparation
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    train_input_ids = train_encoded_inputs['input_ids'].to(device)
-    train_attention_mask = train_encoded_inputs['attention_mask'].to(device)
+    train_input_ids = train_encoded_inputs["input_ids"].to(device)
+    train_attention_mask = train_encoded_inputs["attention_mask"].to(device)
     train_labels = torch.tensor(df_train[class_name].tolist()).to(device)
 
-    val_input_ids = val_encoded_inputs['input_ids'].to(device)
-    val_attention_mask = val_encoded_inputs['attention_mask'].to(device)
+    val_input_ids = val_encoded_inputs["input_ids"].to(device)
+    val_attention_mask = val_encoded_inputs["attention_mask"].to(device)
     val_labels = torch.tensor(df_val[class_name].tolist()).to(device)
 
-    test_input_ids = test_encoded_inputs['input_ids'].to(device)
-    test_attention_mask = test_encoded_inputs['attention_mask'].to(device)
+    test_input_ids = test_encoded_inputs["input_ids"].to(device)
+    test_attention_mask = test_encoded_inputs["attention_mask"].to(device)
     test_labels = torch.tensor(df_test[class_name].tolist()).to(device)
 
     # Model and data loaders
     num_labels = len(df_train[class_name].unique())
-    model = XLNetForSequenceClassification.from_pretrained('xlnet-base-cased', num_labels=num_labels).to(device)
+    model = XLNetForSequenceClassification.from_pretrained(
+        "xlnet-base-cased", num_labels=num_labels
+    ).to(device)
 
-    batch_size = 1
+    batch_size = 64
 
     train_data = TensorDataset(train_input_ids, train_attention_mask, train_labels)
     train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
@@ -81,14 +81,14 @@ def training(class_name, result_dir):
     test_loader = DataLoader(test_data, batch_size=batch_size, shuffle=False)
 
     # Optimizer
-    optimizer = AdamW(model.parameters(), lr=1e-5)
-    num_epochs = 50
+    optimizer = AdamW(model.parameters(), lr=1e-3)
+    num_epochs = 20
     patience = 5
-    best_val_loss = float('inf')
+    best_val_loss = float("inf")
     early_stopping_counter = 0
 
     # Training and validation
-    for epoch in tqdm(range(num_epochs)):
+    for epoch in range(num_epochs):
         model.train()
         train_loss = 0.0
 
@@ -116,22 +116,30 @@ def training(class_name, result_dir):
 
         avg_val_loss = val_loss / len(val_loader)
 
-        with open(os.path.join(result_dir, f'{class_name}.txt'), 'a') as f:
-            f.write(f'Epoch {epoch + 1} | Train Loss: {avg_train_loss}, Val Loss: {avg_val_loss}\n')
+        print(f"Epoch {epoch + 1} | Train Loss: {avg_train_loss}, Val Loss: {avg_val_loss}")
+
+        with open(os.path.join(result_dir, f"{class_name}.txt"), "a") as f:
+            f.write(
+                f"Epoch {epoch + 1} | Train Loss: {avg_train_loss}, Val Loss: {avg_val_loss}\n"
+            )
 
         # Early stopping
         if avg_val_loss < best_val_loss:
             best_val_loss = avg_val_loss
-            torch.save(model.state_dict(), os.path.join(result_dir, f'{class_name}_model.pt'))
+            torch.save(
+                model.state_dict(), os.path.join(result_dir, f"{class_name}_model.pt")
+            )
             early_stopping_counter = 0
         else:
             early_stopping_counter += 1
             if early_stopping_counter >= patience:
-                print('Early stopping')
+                print("Early stopping")
                 break
 
     # Load the best model
-    model.load_state_dict(torch.load(os.path.join(result_dir, f'{class_name}_model.pt')))
+    model.load_state_dict(
+        torch.load(os.path.join(result_dir, f"{class_name}_model.pt"))
+    )
 
     # Test evaluation
     model.eval()
@@ -149,33 +157,24 @@ def training(class_name, result_dir):
 
     # Calculate metrics
     acc = accuracy_score(y_true, y_pred)
-    f1 = f1_score(y_true, y_pred, average='weighted')
+    f1 = f1_score(y_true, y_pred, average="weighted")
 
-    with open('./results/test.txt', 'a') as f:
-        f.write(f'llm, {class_name}, {acc:.6f}, {f1:.6f}\n')
+    print(f"{class_name}, acc={acc:.4f}, f1={f1:.4f}")
 
     cm = confusion_matrix(y_true, y_pred)
-    plt.figure(figsize=(10, 8))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
-    plt.ylabel('Actual')
-    plt.xlabel('Predicted')
-    plt.savefig(os.path.join(result_dir, f'{class_name}.png'))
+    print(cm)
 
 
 def main():
-    result_dir = './results'
+    result_dir = "./results/prompt"
     if not os.path.exists(result_dir):
         os.makedirs(result_dir)
 
-    llm_dir = './results/llm'
-    if not os.path.exists(llm_dir):
-        os.makedirs(llm_dir)
-
-    classes = ['beautiful', 'clean']
+    classes = ["beautiful", "clean"]
 
     for class_name in classes:
-        training(class_name, llm_dir)
+        training(class_name, result_dir)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

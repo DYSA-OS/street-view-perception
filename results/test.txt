@@ -1,7 +1,0 @@
-model, class_name, accuracy, f1
-baseline, beautiful, 0.557576, 0.399198
-baseline, clean, 0.633939, 0.491914
-segment, beautiful, 0.486667, 0.469052
-segment, clean, 0.576364, 0.506088
-llm, beautiful, 0.557576, 0.399198
-llm, clean, 0.633939, 0.491914
