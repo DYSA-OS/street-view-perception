@@ -2,7 +2,7 @@ import warnings
 import pandas as pd
 import numpy as np
 import torch
-from transformers import XLNetTokenizer, XLNetForSequenceClassification
+from transformers import XLNetTokenizer, XLNetForSequenceClassification, AdamW
 from torch.utils.data import TensorDataset, DataLoader
 from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
 import random

@@ -15,22 +15,30 @@ To achieve this, we built and compared the performance of various models for pre
 
 The scores, originally ranging from 1 to 10, were transformed into three classification categories for training a **classification model**:
 
-- **0 (Dissatisfied)**: Scores of 3 or below
-- **1 (Neutral)**: Scores between 4 and 6
-- **2 (Satisfied)**: Scores of 7 or above
-
-However, the models did not learn effectively and failed to produce meaningful results. 
-Suggesting the potential integration of natural language models into existing semantic segmentation-based research.
+- **0 (Dissatisfied)**: between 0 and 4
+- **1 (Neutral)**: between 4 and 7
+- **2 (Satisfied)**: between 7 and 10
 
 ## Results
-|  model   | class      | accuracy | f1_score |
+The majority of the scores were distributed between 4 and 6, leading the model to predominantly predict 'neutral (1)'.
+Therefore, although the accuracy is high, it cannot be considered a generalized performance.
+
+|  model   | class      | accuracy | f1_score | 
 |:--------:|:----------:|:--------:|:--------:|
-| baseline | beautiful  | 0.5267   | 0.4524   |
-| baseline |   clean    | 0.6218   | 0.5038   |
-| segment  | beautiful  | 0.4867   | 0.4691   |
-| segment  |   clean    | 0.5764   | 0.5061   |
-| prompt   | beautiful  | 0.5576   | 0.3992   |
-| prompt   |   clean    | 0.6339   | 0.4919   |
+| baseline | beautiful  | 0.8170   | 0.7347   |
+| baseline |   clean    | 0.8267   | 0.7510   |
+| segment  | beautiful  | 0.8024   | 0.7320   |
+| segment  |   clean    | 0.8200   | 0.7508   |
+| prompt   | beautiful  | 0.8170   | 0.7347   |
+| prompt   |   clean    | 0.8297   | 0.7525   |
+
+### Confusion Matrix
+| model    | beautiful  | clean     | 
+|----------|--------------------------------|--------------------------------|
+| **Baseline** | `[[0, 260, 0],`<br>`[0, 1348, 0],`<br>`[0, 42, 0]]` | `[[0, 61, 0],`<br>`[0, 1364, 5],`<br>`[0, 220, 0]]` |
+| **Segment**  | `[[4, 255, 1],`<br>`[27, 1320, 1],`<br>`[1, 41, 0]]` | `[[0, 61, 0],`<br>`[1, 1350, 18],`<br>`[0, 217, 3]]` |
+| **Prompt**   | `[[0, 260, 0],`<br>`[0, 1348, 0],`<br>`[0, 42, 0]]` | `[[0, 61, 0],`<br>`[0, 1369, 0],`<br>`[0, 220, 0]]` |
+
 
 ## Data(# of image)
 |train|validation|test|
